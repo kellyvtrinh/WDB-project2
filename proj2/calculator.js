@@ -12,8 +12,6 @@
     The answer will be (6 + 4) / 2 = 5;
     not 6 + (4 / 2) = 8.
 
-    The backspace ← will only apply to delete 
-    digits, not operator. 
 
 */
 
@@ -23,9 +21,10 @@
     - curr_num: (INTEGER) current number; reset to null if value entered is an operator
 */
 
+
 let total = 0; 
 let operator = null; 
-let curr_num = null;
+let curr_num = 0;
 
 const operators = ["+", "-", "x", "÷"];
 const symbols = ["C", "←", "="];
@@ -33,50 +32,76 @@ const symbols = ["C", "←", "="];
 /* User enters a number n (STRING).*/
 function makesNumber(n) {
 
-    if (curr_num === null) { // make a new number
-        curr_num = n;
-        
-    } else { 
-        // a previous value is already entered, add to that value 
-        // example: previous value is 5, n = 3, so curr_num = 53
-        curr_num = curr_num * 10 + parseInt(n);
-    }
+    curr_num = curr_num * 10 + parseInt(n);
+    updateDisplay(curr_num.toString());
 
     console.log("Display input value: " + n);
     console.log("Display current number: " + curr_num);
-    updateDisplay(curr_num.toString());
+    console.log("Display total " + total);
     
 }
 
 /* User enters a symbol s (STRING).*/
 function makesSymbol(s) {
     if (s === "C") { // clears and reset everything
-        total = 0;
-        operator = null;
-        curr_num = null;
-        updateDisplay("0");
+        startState();
     } else if (s === "←") { // backspace
-        curr_num = curr_num < 10 ? null : Math.floor(curr_num / 10);
+        curr_num = curr_num < 10 ? 0 : Math.floor(curr_num / 10);
         updateDisplay(curr_num.toString());
-    } else { // s is "="
+    } else if (s === "=") { // s is "="
         calculate();
         updateDisplay(total.toString());
-        operator = null;
-        curr_num = null;
+        resetOperator();
+        resetCurr_Num();
     }
+}
+
+/* User entered an operator */
+function enteredOperator(input) {
+    calculate();
+    // total = curr_num;
+    operator = input;
+    resetCurr_Num();
+    console.log("Display operator " + operator);
+
 }
 
 /* Perform calculation. */
 function calculate() {
+
+    total = parseInt(total);
+    curr_num = parseInt(curr_num);
     if (operator === "+") {
         total += curr_num;
     } else if (operator === "-") {
         total -= curr_num;
     } else if (operator === "x") {
         total *= curr_num;
-    } else {
+    } else if (operator === "÷") {
         total /= curr_num;
+    } else if (operator === null) {
+        total += curr_num;
     }
+    
+    console.log("Display total " + total);
+}
+
+/* State before any calculation is performed, also after "C" is pressed. */
+function startState() {
+    total = 0;
+    operator = null;
+    curr_num = 0;
+    updateDisplay("0");
+}
+
+/* Re-set current number. Occurs when an operator is entered. */
+function resetCurr_Num() {
+    curr_num = 0;
+}
+
+/* Re-set operator to null. Occurs after a calculation is performed. */
+function resetOperator() {
+    operator = null;
 }
 
 /* Change display on the screen. */
@@ -88,7 +113,6 @@ function updateDisplay(newValue) {
 /* Set listener. */
 function listener() {
 
-    console.log("Successfully called listener!")
     let allButtons = document.getElementsByClassName("buttons");
 
     for (idx = 0; idx < allButtons.length; idx ++) {
@@ -100,20 +124,13 @@ function listener() {
             if (symbols.includes(input)) { // user inputs symbols: C, ←, or =
                 makesSymbol(input);
             } else if (operators.includes(input)) { // user inputs an operator
-                if ((operator != null) & (curr_num != null)) { 
-                    // in this case, the user input multiple an equation with multiple
-                    // operators, such as 4 + 5 / 2. 
-                    // the calculator will then just calculate 4 + 5 
-                    calculate();
-                }
-                operator = input;
+                enteredOperator(input);
             } else { // user inputs a number
-                console.log("Successfully go to makesNumber")
                 makesNumber(input);
             }
         })
     }
 }
 
-console.log("hello from calculator.js!");
 listener();
+
