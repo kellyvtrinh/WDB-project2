@@ -34,10 +34,6 @@ function makesNumber(n) {
 
     curr_num = curr_num * 10 + parseInt(n);
     updateDisplay(curr_num.toString());
-
-    console.log("Display input value: " + n);
-    console.log("Display current number: " + curr_num);
-    console.log("Display total " + total);
     
 }
 
@@ -62,7 +58,6 @@ function enteredOperator(input) {
     // total = curr_num;
     operator = input;
     resetCurr_Num();
-    console.log("Display operator " + operator);
 
 }
 
@@ -83,7 +78,6 @@ function calculate() {
         total += curr_num;
     }
     
-    console.log("Display total " + total);
 }
 
 /* State before any calculation is performed, also after "C" is pressed. */
